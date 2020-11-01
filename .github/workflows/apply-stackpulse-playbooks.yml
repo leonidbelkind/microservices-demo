@@ -18,9 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: stackpulse/stackpulse-apply-playbook@v0.2
-        name: Apply playbook
+        name: Apply playbooks
         with:
           clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
           clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
           yamlFile: ops/get-latest-pods.yml
+
+      - uses: stackpulse/stackpulse-apply-playbook@v0.2
+        name: Apply triggers
+        with:
+          clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
+          clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
+          yamlFile: ops/triggers/get-latest-pods-trigger.yml
+          yamlType: trigger          
