@@ -1,0 +1,13 @@
+---
+apiVersion: stackpulse.io/v1
+kind: Trigger
+enabled: true
+playbook: get-latest-pods
+metadata:
+  name: Trigger for playbook get-latest-pods
+  description: Retrieve the list of recently started PoDs upon any error fired in production
+scenarios:
+- name: alertmanager
+  enabled: true
+  integration: alertmanager-production
+  when: '{{ and ( contains .Title "error" ) ( eq .State "firing" ) }}'

@@ -1,0 +1,34 @@
+apiVersion: stackpulse.io/v1
+kind: Playbook
+metadata:
+  name: get-latest-pods
+  description: A Playbook designed to get the latest started pods from a k8s cluster
+steps:
+
+  # Pull the 5 latest (most recently started) PoDs
+  - id: k8s-get-latest-pods
+    name: us-docker.pkg.dev/stackpulse/public/k8s-get-last-pods
+    runner: stackpulse-production
+    env:
+      NUM_RESULTS: 5
+      NAMESPACE: default
+    output_parser:
+      name: us-docker.pkg.dev/stackpulse/public/json-parser
+
+  # Send the list to the #alerts channel in Slack
+  - name: us-docker.pkg.dev/stackpulse/public/slack/dynamic-message
+    envFrom:
+      integrationRef: slack-alerts
+    env:
+      SP_REDIRECT_URL: https://app.stackpulse.io/execution/{{ .execution.id }}
+      RECIPIENTS: "#alerts"
+      MESSAGE_TEXT: |
+        The last started pods from namespace (default) are:
+        ```
+        --------------------------\n
+        {{ range $idx, $pod := .output }}
+              Name: {{ $pod.name }}\n
+              Time Since Creation: {{ toDate \"2006-01-02T15:04:05Z\" $pod.timestamp | ago }}\n
+              --------------------------\n
+        {{ end }}
+        ```

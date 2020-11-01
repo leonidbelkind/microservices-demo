@@ -1,0 +1,13 @@
+---
+apiVersion: stackpulse.io/v1
+kind: Trigger
+enabled: true
+playbook: get-error-logs
+metadata:
+  name: Trigger for get-error-logs
+  description: Pull error logs from relevant services and automatically upload them to a Slack channel
+scenarios:
+- name: alertmanager
+  enabled: true
+  integration: alertmanager-production
+  when: '{{ and ( contains .Title "error" ) ( eq .State "firing" ) }}'

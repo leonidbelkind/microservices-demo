@@ -1,0 +1,35 @@
+apiVersion: stackpulse.io/v1
+kind: Playbook
+metadata:
+  name: get-error-logs
+  description: Playbook to fetch error logs from the alert pipeline
+steps:
+
+  # Retrieve the list of relevant services
+  - name: us-docker.pkg.dev/stackpulse/public/k8s/get-sp-services
+    id: svcs
+
+  # Pull latest ERRORs from the services
+  - foreach:
+      in: svcs.output
+      key: k
+      value: v
+      steps:
+
+        # Pull the logs
+        - name: us-docker.pkg.dev/stackpulse/public/kubectl/logs
+          runner: production
+          env:
+            SINCE: "10m"
+            CONTAINER_NAME: "{{ .v }}"
+            LABEL: "app={{ .v }}-primary"
+            USE_LOCAL_TOKEN: "true"
+
+        # Attach them to the alerts channel in Slack
+        - name: us-docker.pkg.dev/stackpulse/public/slack/message/snippet
+          envFrom:
+            integrationRef: slack-alerts
+          env:
+            TITLE: 'Displaying errors logs for the last 10 minutes for {{ .v }}"'
+            RECIPIENTS: '#microservice-alerts'
+            CONTENT: "{{ .logs }}"
