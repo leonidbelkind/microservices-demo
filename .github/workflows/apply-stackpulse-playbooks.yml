@@ -12,38 +12,15 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+
+  apply-playbook:
+    name: Apply StackPulse Playbook
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      env:
-        SP_PRIMARYDOMAIN: ${{ secrets.primarydomain }}
-        SP_APIKEY: ${{ secrets.apikey }}
-        SP_APISECRET: ${{ secrets.apisecret }}    
-      run: |
-        echo "Add $SP_PRIMARYDOMAIN other $SP_APIKEY actions $SP_APISECRET to build,"
-        echo test, and deploy your project.
-    # Runs a single command using the runners shell
-    - name: Retrieve list of playbooks
-      shell: bash    
-      env:
-        SP_PRIMARYDOMAIN: ${{ secrets.primarydomain }}
-        SP_APIKEY: ${{ secrets.apikey }}
-        SP_APISECRET: ${{ secrets.apisecret }} 
-      run: bin/spcli -v get playbooks
-
-    - name: Apply playbooks
-      shell: bash    
-      env:
-        SP_PRIMARYDOMAIN: ${{ secrets.primarydomain }}
-        SP_APIKEY: ${{ secrets.apikey }}
-        SP_APISECRET: ${{ secrets.apisecret }} 
-      run: bin/spcli apply playbook -f ./multiline_playbook.yaml -i LeonidsTest
+      - uses: actions/checkout@v2
+      - uses: stackpulse/stackpulse-apply-playbook@v0.2
+        name: Apply playbook
+        with:
+          clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
+          clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
+          yamlFile: ops/get-latest-pods.yml
