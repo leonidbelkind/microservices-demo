@@ -11,25 +11,38 @@ on:
     branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
+jobs:        
 
-  apply-playbook:
-    name: Apply StackPulse Playbook
+  # Apply StackPulse Playbooks
+  apply-playbooks:
+    name: Apply StackPulse playbooks in the repository
+    strategy:
+      matrix:
+        playbooks: [get-latest-pods.yml, get-service-latest-errors.yml]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: stackpulse/stackpulse-apply-playbook@v0.2
-        name: Apply playbooks
+        name: Apply Playbooks
         with:
           clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
           clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
-          yamlFile: ops/get-latest-pods.yml
+          yamlFile: ops/${{ matrix.playbooks }}
 
+
+  # Apply StackPulse Triggers
+  apply-triggers:
+    name: Apply StackPulse triggers in the repository
+    strategy:
+      matrix:
+        triggers: [get-latest-pods-trigger.yml, get-service-latest-errors-triggerå.yml]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - uses: stackpulse/stackpulse-apply-playbook@v0.2
-        name: Apply triggers
+        name: Apply Playbooks
         with:
           clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
           clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
-          yamlFile: ops/triggers/get-latest-pods-trigger.yml
-          yamlType: trigger          
+          yamlFile: ops/tiggers/${{ matrix.triggers }}   
+          yamlType: trigger                 
