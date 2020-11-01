@@ -35,7 +35,7 @@ jobs:
     name: Apply StackPulse triggers in the repository
     strategy:
       matrix:
-        triggers: [get-latest-pods-trigger.yml, get-service-latest-errors-triggerå.yml]
+        triggers: [get-latest-pods-trigger.yml, get-service-latest-errors-trigger.yml]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
