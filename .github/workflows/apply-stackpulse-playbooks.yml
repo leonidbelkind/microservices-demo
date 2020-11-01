@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: stackpulse/stackpulse-apply-playbook@v0.2
-        name: Apply Playbooks
+        name: Apply Triggers
         with:
           clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
           clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
