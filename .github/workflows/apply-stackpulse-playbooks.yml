@@ -44,5 +44,5 @@ jobs:
         with:
           clientId: ${{ secrets.STACKPULSE_CLIENT_ID }}
           clientSecret: ${{ secrets.STACKPULSE_CLIENT_SECRET }}
-          yamlFile: ops/tiggers/${{ matrix.triggers }}   
+          yamlFile: ops/triggers/${{ matrix.triggers }}   
           yamlType: trigger                 
